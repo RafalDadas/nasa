@@ -12,9 +12,12 @@ dependencies:
   flutter:
     sdk: flutter
 
+  bloc: ^7.0.0
   cupertino_icons: ^1.0.2
   equatable: ^2.0.3
+  flutter_bloc: ^7.0.1
   http: ^0.13.3
+  url_launcher: ^6.0.9
 
 dev_dependencies:
   flutter_test:
@@ -23,3 +26,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/nasa_logo.png

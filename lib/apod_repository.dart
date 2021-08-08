@@ -7,13 +7,12 @@ import 'apod/apod.dart';
 /// Repository containing methods for A Picture of the Day from NASA APIs
 class APODRepository {
   /// Used to fetch NASA Picture of the Day from NASA APIs. Defaults to today's
-  /// picture or video. Optionally you can specify other date.
+  /// picture or video. Optionally other date can be specified.
   Future<APOD> getPictureOfTheDay({DateTime? date}) async {
     http.Response response;
 
     response = await http.get(
       // Checks if user specified exact date.
-      // https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&date=2020-01-02
       date != null
           ? Uri.parse(
               'https://api.nasa.gov/planetary/apod'
