@@ -27,9 +27,7 @@ class APODPageBody extends StatelessWidget {
     final state = context.watch<APODBloc>().state;
     switch (state.status) {
       case APODStatus.failure:
-        // TODO: Check if user has internet connection
-        // TODO: Failure in getting APOD should prompt user to change date
-        return const Center(child: Text('Getting a picture of the day failed'));
+        return const APODViewFailed();
       case APODStatus.success:
         return APODView(apod: state.apod);
       default:
@@ -110,15 +108,16 @@ class APODView extends StatelessWidget {
                 ),
           Center(
             child: Text(
-              apod.title,
+              '\n${apod.title}',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
             ),
           ),
-          Text(apod.explanation),
+          Text('\n${apod.explanation}', textAlign: TextAlign.center),
           apod.hdUrl != null
               ? RichText(
+                  textAlign: TextAlign.center,
                   text: TextSpan(
-                    text: 'Link to HD image: ',
+                    text: '\nLink to HD image:\n',
                     children: <TextSpan>[
                       TextSpan(
                         text: apod.hdUrl,
@@ -138,7 +137,64 @@ class APODView extends StatelessWidget {
                   ),
                 )
               : Text(''),
+          apod.copyright != null
+              ? Text('\nCopyrights:\n${apod.copyright}',
+                  style: TextStyle(fontSize: 11.0))
+              : Text(''),
         ],
+      ),
+    );
+  }
+}
+
+class APODViewFailed extends StatelessWidget {
+  const APODViewFailed();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        leading: Image(image: AssetImage('assets/nasa_logo.png')),
+        centerTitle: true,
+        title: Text('A Picture of the Day'),
+        actions: <Widget>[
+          IconButton(
+            tooltip: 'Change date',
+            icon: Icon(Icons.calendar_today),
+            onPressed: () async {
+              DateTime initialDate = DateTime.now();
+              print('Calendar IconButton pressed');
+              DateTime selectedDate = await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return DatePickerDialog(
+                        initialDate: initialDate,
+                        // Date must be between Jun 16, 1995 and today.
+                        firstDate: DateTime(1995, 6, 16),
+                        lastDate: DateTime.now(),
+                      );
+                    },
+                  ) ??
+                  initialDate;
+              print('Selected date: $selectedDate');
+              if (initialDate != selectedDate) {
+                context.read<APODBloc>().add(APODNewDateSelected(selectedDate));
+              }
+            },
+          ),
+        ],
+      ),
+      body: Center(
+        child: Text(
+          'Getting a NASA Picture of the Day failed. Pick other date or check your internet connection',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 32.0,
+            color: Colors.red,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
